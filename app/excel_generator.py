@@ -2,7 +2,7 @@ import openpyxl
 from datetime import datetime
 from io import BytesIO
 
-# --- CABECALHO E VALORES FIXOS (SEM MUDANÇAS) ---
+# --- CABECALHO E VALORES FIXOS ---
 CABECALHO = [
     'Barcode #', 'Box #/File No/Unique ID', 'DEPT.', 'Date From', 'Date To',
     'Record Series Code', 'CATEGORY', 'SUBCATEGORY', 'Record Series Title/Type',
@@ -19,7 +19,7 @@ VALORES_FIXOS = {
 
 def create_certificate_workbook(lista_certificados):
     """
-    Cria um workbook do Excel em memória a partir de uma lista de dados de certificados.
+    Cria um workbook do Excel em memória a partir de uma lista de dados de certificados. (VERSÃO 2.0)
     """
     workbook = openpyxl.Workbook()
     sheet = workbook.active
@@ -29,31 +29,35 @@ def create_certificate_workbook(lista_certificados):
         # Pega os valores dos campos. Se o campo estiver vazio, usa 'N/A'.
         tag = dados.get('tag', '') or 'N/A'
         sala = dados.get('sala', '') or 'N/A'
+        bloco = dados.get('bloco', '') or 'N/A'  # 1. NOVO CAMPO 'BLOCO'
         modelo = dados.get('modelo', '') or 'N/A'
         fabricante = dados.get('fabricante', '') or 'N/A'
 
-        # 1. Processar a data
+        # Processar a data
         data_calibracao_obj = datetime.strptime(dados['data'], '%d/%m/%Y')
-        data_formatada_excel = data_calibracao_obj.strftime('%d-%b-%Y')
-        data_formatada_descricao = data_calibracao_obj.strftime('%d/%b/%Y')
+        # 2. NOVO FORMATO DE DATA PARA AS COLUNAS D e E
+        data_formatada_excel = data_calibracao_obj.strftime('%d/%m/%Y')
+        data_formatada_descricao = data_calibracao_obj.strftime('%d-%b-%Y') # Mantém formato 'dd-Mês-yyyy' para descrição
 
-        # 2. Calcular a Data de Destruição
+        # Calcular a Data de Destruição
         ano_destruicao = data_calibracao_obj.year + 22
         data_destruicao = f"31/Dec/{ano_destruicao}"
 
-        # 3. Montar a Descrição
+        # 3. MUDANÇA NA DESCRIÇÃO (SEPARADORES E CAMPO BLOCO)
         descricao = (
-            f"Certificado de Calibração N° {dados['num_certificado']}, "
-            f"{dados['tipo_instrumento']}, TAG: {tag} - "
-            f"Sala: {sala} - Modelo: {modelo}, "
+            f"Certificado de Calibração N° {dados['num_certificado']} - "
+            f"Tipo: {dados['tipo_instrumento']} - TAG: {tag} - "
+            f"Sala: {sala} - Bloco: {bloco} - Modelo: {modelo} - "
             f"Fabricante: {fabricante} - {data_formatada_descricao}"
         )
 
-        # 4. Montar a linha completa
+        # Montar a linha completa
         linha_completa = [
             dados['barcode'],
             VALORES_FIXOS['Box #/File No/Unique ID'], VALORES_FIXOS['DEPT.'],
-            data_formatada_excel, data_formatada_excel, VALORES_FIXOS['Record Series Code'],
+            data_formatada_excel, # Novo formato aqui
+            data_formatada_excel, # Novo formato aqui
+            VALORES_FIXOS['Record Series Code'],
             VALORES_FIXOS['CATEGORY'], VALORES_FIXOS['SUBCATEGORY'], VALORES_FIXOS['Record Series Title/Type'],
             descricao, tag, VALORES_FIXOS['Retention Period'], data_destruicao,
             VALORES_FIXOS['Legal Hold/Product Name'], VALORES_FIXOS['Data Owner'], VALORES_FIXOS['Notes']
