@@ -32,16 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- INÍCIO DA NOVA LÓGICA DE VALIDAÇÃO ---
     function validarData(dataStr) {
-        // Expressão regular para verificar o formato dd/mm/aaaa
-        const regex = /^\d{2}\/\d{2}\/\d{4}$/;
-        if (!regex.test(dataStr)) {
-            return false;
-        }
-        
-        // Verifica se a data é válida (ex: não aceita 31/02/2024)
         const [dia, mes, ano] = dataStr.split('/').map(Number);
         const data = new Date(ano, mes - 1, dia); // Mês é 0-indexado
-        return data.getFullYear() === ano && data.getMonth() === mes - 1 && data.getDate() === dia;
+
+        const formatoValido = /^\d{2}\/\d{2}\/\d{4}$/.test(dataStr);
+        const dataValida = data.getFullYear() === ano && data.getMonth() === mes - 1 && data.getDate() === dia;
+
+        return formatoValido && dataValida;
     }
     // --- FIM DA NOVA LÓGICA DE VALIDAÇÃO ---
 
@@ -71,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         resetarFormulario();
         atualizarListaVisual();
+        document.getElementById('data').focus(); // Foco no campo de data após adicionar/atualizar
     }
 
     function editarCertificado(index) {
@@ -83,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         editIndexField.value = index;
         addButton.textContent = '💾 Atualizar Item';
         addButton.style.backgroundColor = '#ffc107';
-        document.getElementById('data').focus();
+        document.getElementById('data').focus(); // Foco no campo de data ao editar
     }
 
     function excluirCertificado(index) {
@@ -119,6 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
         editIndexField.value = -1;
         addButton.textContent = '+ Adicionar à Lista';
         addButton.style.backgroundColor = 'var(--btn-add)';
-        document.getElementById('data').focus();
+        document.getElementById('data').focus(); // Garante o foco na data ao resetar
     }
 });

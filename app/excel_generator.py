@@ -26,12 +26,14 @@ def create_certificate_workbook(lista_certificados):
     sheet.append(CABECALHO)
 
     for dados in lista_certificados:
-        # Pega os valores dos campos. Se o campo estiver vazio, usa 'N/A'.
-        tag = dados.get('tag', '') or 'N/A'
-        sala = dados.get('sala', '') or 'N/A'
-        bloco = dados.get('bloco', '') or 'N/A'  # 1. NOVO CAMPO 'BLOCO'
-        modelo = dados.get('modelo', '') or 'N/A'
-        fabricante = dados.get('fabricante', '') or 'N/A'
+        def get_valor(campo):
+            return dados.get(campo, '') or 'N/A'
+
+        tag = get_valor('tag')
+        sala = get_valor('sala')
+        bloco = get_valor('bloco')
+        modelo = get_valor('modelo')
+        fabricante = get_valor('fabricante')
 
         # Processar a data
         data_calibracao_obj = datetime.strptime(dados['data'], '%d/%m/%Y')
