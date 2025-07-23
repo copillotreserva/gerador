@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let certificados = [];
     const form = document.getElementById('form-certificado');
     const addButton = document.getElementById('add-btn');
+    const clearButton = document.getElementById('clear-btn');
     const editIndexField = document.getElementById('edit-index');
     const listaUI = document.getElementById('lista-certificados');
     const batchDataInput = document.getElementById('batch_data');
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('data').addEventListener('input', (e) => formatarData(e.target));
     document.getElementById('num_certificado').addEventListener('input', (e) => formatarCertificado(e.target));
     addButton.addEventListener('click', adicionarOuAtualizarCertificado);
+    clearButton.addEventListener('click', limparLista);
 
     window.editarCertificado = editarCertificado;
     window.excluirCertificado = excluirCertificado;
@@ -47,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const cert = Object.fromEntries(dados.entries());
 
         // --- VALIDAÇÃO NO FRONTEND ---
-        if (!cert.barcode || !cert.data || !cert.num_certificado || !cert.tipo_instrumento) {
+        if (!cert.barcode || !cert.data || !cert.num_certificado || !cert.equipamento) {
             alert('Por favor, preencha os campos obrigatórios.');
             return;
         }
@@ -59,6 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // --- FIM DA VALIDAÇÃO ---
 
+        cert.tag = cert.tag.toUpperCase();
+        cert.sala = cert.sala.toUpperCase();
+        cert.bloco = cert.bloco.toUpperCase();
+
         const editIndex = parseInt(editIndexField.value, 10);
         if (editIndex > -1) {
             certificados[editIndex] = cert;
@@ -69,6 +75,13 @@ document.addEventListener('DOMContentLoaded', () => {
         resetarFormulario();
         atualizarListaVisual();
         document.getElementById('data').focus(); // Foco no campo de data após adicionar/atualizar
+    }
+
+    function limparLista() {
+        if (confirm('Tem certeza que deseja limpar toda a lista de certificados?')) {
+            certificados = [];
+            atualizarListaVisual();
+        }
     }
 
     function editarCertificado(index) {

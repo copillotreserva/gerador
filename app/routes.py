@@ -23,7 +23,7 @@ def gerar_lote_excel():
 
         # A validação robusta do Jules continua funcionando
         for i, cert in enumerate(lista_certificados):
-            obrigatorios = ['barcode', 'data', 'num_certificado', 'tipo_instrumento']
+            obrigatorios = ['barcode', 'data', 'num_certificado', 'equipamento']
             for campo in obrigatorios:
                 if not cert.get(campo):
                     return f"Erro no item {i+1}: O campo '{campo}' é obrigatório.", 400
